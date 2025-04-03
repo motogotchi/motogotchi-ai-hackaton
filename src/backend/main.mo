@@ -1,6 +1,5 @@
 import Principal "mo:base/Principal";
 import Iter "mo:base/Iter";
-import Debug "mo:base/Debug";
 import Map "mo:map/Map";
 import User "user";
 

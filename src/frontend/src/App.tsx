@@ -22,12 +22,11 @@ const mainCanisterId = process.env.CANISTER_ID;
 
 // Main application
 const App = () => {
-  const [message, setMessage] = useState("");
-  const [userInfo, setUserInfo] = useState("");
   const [authClient, setAuthClient] = useState<AuthClient | null>(null);
   const [httpAgent, setHttpAgent] = useState<HttpAgent | null>(null);
   const [mainActor, setMainActor] = useState<AS<MainService> | null>(null);
   const [userActor, setUserActor] = useState<AS<UserService> | null>(null);
+  const [userInfo, setUserInfo] = useState<string | null>(null);
 
   // Initialize app
   useEffect(() => {
@@ -55,8 +54,9 @@ const App = () => {
   // Initialize auth
   useEffect(() => {
     async function handleAuthState() {
-      console.log("🤖 handleAuthState");
       if (await authClient?.isAuthenticated()) {
+        console.log("Authenticated");
+
         // Get user canister
         const userId = authClient?.getIdentity().getPrincipal();
         const fetchedUserCanisterIdArray: [Principal] =
@@ -72,7 +72,6 @@ const App = () => {
           setUserActor(newUserActor);
         }
         // If not - create a new canister, save it to accounts and create an actor
-        console.log("Authenticated");
       } else {
         console.log("Not authenticated");
       }
@@ -96,11 +95,7 @@ const App = () => {
 
   // Create account
   const createAccount = async () => {
-    setMessage("Loading...");
-    const account = await mainActor?.createAccount(
-      authClient?.getIdentity().getPrincipal()
-    );
-    setMessage(account.toString());
+    await mainActor?.createAccount(authClient?.getIdentity().getPrincipal());
   };
 
   // Get user info
@@ -121,48 +116,31 @@ const App = () => {
               Login with Internet Identity
             </button>
           ) : (
-            <button
-              onClick={logout}
-              className="rounded bg-gray-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
-            >
-              Logout
-            </button>
-          )}
+            <>
+              {!userActor ? (
+                <button
+                  onClick={createAccount}
+                  className="rounded bg-green-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                >
+                  Create an account
+                </button>
+              ) : (
+                <button
+                  onClick={getUserInfo}
+                  className="rounded bg-green-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                >
+                  Get user info
+                </button>
+              )}
 
-          {!userActor ? (
-            <button
-              onClick={createAccount}
-              className="rounded bg-green-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-            >
-              Create an account
-            </button>
-          ) : (
-            <button
-              onClick={getUserInfo}
-              className="rounded bg-green-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-            >
-              Get user info
-            </button>
+              <button
+                onClick={logout}
+                className="rounded bg-gray-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
+              >
+                Logout
+              </button>
+            </>
           )}
-        </div>
-      </div>
-
-      <div>
-        <div>
-          <span>User ID: </span>
-          <span>{authClient?.getIdentity().getPrincipal().toString()}</span>
-        </div>
-        <div>
-          <span className={`${userActor ? "" : "text-gray-400"}`}>
-            User Actor:{" "}
-          </span>
-          <span>{userActor?.toString()}</span>
-        </div>
-        <div>
-          <span className={`${userInfo ? "" : "text-gray-400"}`}>
-            User Info:{" "}
-          </span>
-          <span>{userInfo}</span>
         </div>
       </div>
 
@@ -170,11 +148,10 @@ const App = () => {
         <pre>
           {JSON.stringify(
             {
-              message,
+              userId: authClient?.getIdentity().getPrincipal().toString(),
+              userInfo,
               mainActor,
               userActor,
-              // "httpAgent.config": httpAgent?.config,
-              // authClient,
             },
             null,
             2
