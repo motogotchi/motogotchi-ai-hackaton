@@ -1,5 +1,6 @@
 import Principal "mo:base/Principal";
 import Iter "mo:base/Iter";
+import Debug "mo:base/Debug";
 import Map "mo:map/Map";
 import User "user";
 
@@ -30,16 +31,31 @@ persistent actor Main {
   };
 
   // Get user canister by user principal
-  public func getAccount(userPrincipal : Principal) : async ?Principal {
+  public func getUserCanister(userPrincipal : Principal) : async ?Principal {
     return Map.get(savedAccounts, Map.phash, userPrincipal);
   };
 
-  // Create and save a new user canister
+  // Delete user canister by user principal
+  public func deleteAccount(userPrincipal : Principal) : async () {
+    ignore Map.remove(savedAccounts, Map.phash, userPrincipal);
+  };
+
+  // Create canister and save an account
   public func createAccount(userPrincipal : Principal) : async Principal {
-    let newCanister = await (with cycles = 100_000_000_000) User.User(userPrincipal, Principal.fromActor(Main));
-    let newCanisterPrincipal = Principal.fromActor(newCanister);
-    Map.set(savedAccounts, Map.phash, userPrincipal, newCanisterPrincipal);
-    return newCanisterPrincipal;
+    let canisterPrincipalOpt = Map.get(savedAccounts, Map.phash, userPrincipal);
+
+    switch canisterPrincipalOpt {
+      case (?canisterPrincipal) {
+        return canisterPrincipal;
+      };
+
+      case (_) {
+        let newCanister = await (with cycles = 100_000_000_000) User.User(userPrincipal, Principal.fromActor(Main));
+        let newCanisterPrincipal = Principal.fromActor(newCanister);
+        Map.set(savedAccounts, Map.phash, userPrincipal, newCanisterPrincipal);
+        return newCanisterPrincipal;
+      };
+    };
   };
 
 };
