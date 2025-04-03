@@ -2,8 +2,9 @@
   "name": "motobot",
   "type": "module",
   "scripts": {
-    "build": "pnpm -r build",
+    "dev": "pnpm -r dev",
     "prebuild": "pnpm -r prebuild",
-    "dev": "pnpm -r dev"
+    "build": "pnpm -r build",
+    "deploy": "pnpm -r build && dfx deploy"
   }
 }

@@ -3,9 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prebuild": "pnpm install --dev && dfx generate main",
-    "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "prebuild": "pnpm install && dfx generate main",
+    "build": "tsc -b && vite build"
   },
   "dependencies": {
     "@dfinity/agent": "2.4.0",
