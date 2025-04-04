@@ -25,6 +25,9 @@ importers:
       '@tailwindcss/vite':
         specifier: 4.1.0
         version: 4.1.0(vite@5.4.11(@types/node@22.13.17)(lightningcss@1.29.2))
+      classnames:
+        specifier: ^2.5.1
+        version: 2.5.1
       lucide-react:
         specifier: ^0.487.0
         version: 0.487.0(react@18.3.1)
@@ -577,6 +580,9 @@ packages:
 
   caniuse-lite@1.0.30001707:
     resolution: {integrity: sha512-3qtRjw/HQSMlDWf+X79N206fepf4SOOU6SQLMaq/0KkZLmSjPxAkBOQQ+FxbHKfHmYLZFfdWsO3KA90ceHPSnw==}
+
+  classnames@2.5.1:
+    resolution: {integrity: sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==}
 
   commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
@@ -1351,6 +1357,8 @@ snapshots:
       ieee754: 1.2.1
 
   caniuse-lite@1.0.30001707: {}
+
+  classnames@2.5.1: {}
 
   commander@2.20.3: {}
 
