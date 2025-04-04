@@ -1,9 +1,4 @@
 import { LucideIcon } from "lucide-react";
-import { ActorSubclass as AS, HttpAgent } from "@dfinity/agent";
-import { AuthClient } from "@dfinity/auth-client";
-
-import { _SERVICE as MainService } from "declarations/main/main.did.d";
-import { _SERVICE as UserService } from "declarations/user/user.did.d";
 
 // Character
 export type CharacterType = {
@@ -11,7 +6,7 @@ export type CharacterType = {
   image: string;
 };
 
-// User info
+// User info (Matches backend structure, assuming Text resolves to string)
 export type UserInfoType = {
   name: string;
   height: string;
@@ -19,7 +14,7 @@ export type UserInfoType = {
   goals: string;
 };
 
-// Character info
+// Character info (Static frontend data for now)
 export type CharacterInfoType = {
   health: number;
   energy: number;
@@ -38,16 +33,13 @@ export type RoomActionType = {
   label: string;
 };
 
-// Chat message
+// Chat message (Frontend representation)
 export type ChatMessageType = {
-  role: string;
+  role: "user" | "assistant" | "system"; // Use specific roles
   content: string;
 };
 
+// Props for the main Game page component
 export type GameProps = {
-  authClient: AuthClient;
-  httpAgent: HttpAgent;
-  mainActor: AS<MainService>;
-  userActor: AS<UserService>;
-  logout: () => {};
+  logout: () => Promise<void>; // Only logout is needed now
 };

@@ -1,3 +1,4 @@
+// src/frontend/vite.config.ts
 import react from "@vitejs/plugin-react";
 import environment from "vite-plugin-environment";
 import tailwindcss from "@tailwindcss/vite";
@@ -6,7 +7,7 @@ import { defineConfig } from "vite";
 
 // Vite configuration
 export default defineConfig({
-  publicDir: "assets",
+  // publicDir: "assets", // REMOVE THIS LINE
   build: { emptyOutDir: true },
   base: "./",
   plugins: [
@@ -15,7 +16,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  envDir: "../../",
+  envDir: "../../", // Correct path relative to vite.config.ts to find .env
   define: { "process.env": process.env },
   optimizeDeps: {
     esbuildOptions: { define: { global: "globalThis" } },
@@ -24,7 +25,13 @@ export default defineConfig({
     alias: [
       {
         find: "declarations",
-        replacement: fileURLToPath(new URL("../declarations", import.meta.url)),
+        replacement: fileURLToPath(
+          new URL("../declarations", import.meta.url) // Adjusted path relative to src/frontend/
+        ),
+      },
+      {
+        find: "src",
+        replacement: fileURLToPath(new URL("./src", import.meta.url)),
       },
     ],
     dedupe: ["@dfinity/agent"],
