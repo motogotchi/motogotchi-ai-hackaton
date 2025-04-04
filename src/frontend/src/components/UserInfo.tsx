@@ -1,7 +1,15 @@
 import { UserInfoType } from "src/types";
 
 // User info
-const UserInfo = ({ userInfo }: { userInfo: UserInfoType }) => {
+const UserInfo = ({
+  userInfo,
+  userId,
+  logout,
+}: {
+  userInfo: UserInfoType;
+  userId: string;
+  logout: () => {};
+}) => {
   return (
     <div className="shadow-lg border-t-2 border-gray-400/80 -mt-8 -mr-8 flex flex-col gap-3 bg-gray-900/60 backdrop-blur-lg rounded-2xl inset-ring-4 inset-ring-white/30 p-6">
       {/* User header */}
@@ -17,15 +25,18 @@ const UserInfo = ({ userInfo }: { userInfo: UserInfoType }) => {
             {userInfo.name}
           </div>
           <div
-            title={userInfo.id}
+            title={userId}
             className="text-gray-500 overflow-ellipsis whitespace-nowrap overflow-hidden"
           >
-            {userInfo.id}
+            {userId}
           </div>
         </div>
 
         {/* Log out */}
-        <button className="cursor-pointer transition-colors font-medium bg-gray-700 rounded-lg py-2 px-3 hover:bg-gray-600 active:translate-y-px inset-ring-4 inset-ring-white/15">
+        <button
+          onClick={logout}
+          className="cursor-pointer transition-colors font-medium bg-gray-700 rounded-lg py-2 px-3 hover:bg-gray-600 active:translate-y-px inset-ring-4 inset-ring-white/15"
+        >
           Log out
         </button>
       </div>
@@ -36,8 +47,6 @@ const UserInfo = ({ userInfo }: { userInfo: UserInfoType }) => {
         <div className="text-gray-300 flex">
           <div className="font-medium text-gray-400 w-14 shrink-0">Info</div>
           <div className="tracking-wide flex gap-2">
-            <span>{userInfo.age}</span>
-            <span className="text-gray-400 font-semibold">&middot;</span>
             <span>{userInfo.height}</span>
             <span className="text-gray-400 font-semibold">&middot;</span>
             <span>{userInfo.weight}</span>

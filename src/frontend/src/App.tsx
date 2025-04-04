@@ -1,116 +1,118 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
-  Armchair,
-  CookingPot,
-  Dumbbell,
-  Bath,
-  Gamepad2,
-  MessageCircleMore,
-  Apple,
-  Lightbulb,
-} from "lucide-react";
+  ActorSubclass as AS,
+  HttpAgent,
+  Actor,
+  AnonymousIdentity,
+} from "@dfinity/agent";
+import { Principal } from "@dfinity/principal";
+import { AuthClient } from "@dfinity/auth-client";
 
-import {
-  CharacterInfoType,
-  ChatMessageType,
-  RoomActionType,
-  RoomType,
-  UserInfoType,
-} from "./types";
-import CharacterStats from "./components/CharacterStats";
-import RoomActions from "./components/RoomActions";
-import Character from "./components/Character";
-import UserInfo from "./components/UserInfo";
-import RoomNav from "./components/RoomNav";
-import Chat from "./components/Chat";
-import GameContainer from "./components/GameContainer";
+import { idlFactory as mainIDL } from "declarations/main";
+import { idlFactory as userIDL } from "declarations/user";
+import { _SERVICE as MainService } from "declarations/main/main.did.d";
+import { _SERVICE as UserService } from "declarations/user/user.did.d";
 
-const chatMessages: ChatMessageType[] = [
-  {
-    role: "user",
-    content:
-      "Curabitur ultricies ex libero, non egestas ex sodales eget. Vestibulum ac luctus turpis. Quisque massa erat, efficitur.",
-  },
-  {
-    role: "bot",
-    content: "Etiam magna risus, egestas ut nunc at, maximus pulvinar dui.",
-  },
-  {
-    role: "user",
-    content:
-      "Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.",
-  },
-  {
-    role: "bot",
-    content: "Etiam magna risus, egestas.",
-  },
-];
+import Game from "./Game";
+import Login from "./Login";
 
-const characterInfo: CharacterInfoType = {
-  health: 95,
-  energy: 73,
-  points: 1495,
-};
-
-const userInfo: UserInfoType = {
-  letters: "JD",
-  name: "John Doe",
-  age: "27yr",
-  height: "180cm",
-  weight: "60kg",
-  goals: "Get fit, work out more and eat better more natural foods.",
-  id: "k5mnn-mzdtd-cowdf-3quvk-glcl6-oov6l-ejahp-fx5jk-eq4gv-d6wlr-gae",
-};
-
-const rooms: RoomType[] = [
-  { icon: Armchair, label: "Home" },
-  { icon: CookingPot, label: "Kitchen" },
-  { icon: Dumbbell, label: "Gym" },
-  { icon: Bath, label: "Bathroom" },
-];
-
-const roomActions: RoomActionType[] = [
-  { icon: Gamepad2, label: "Play" },
-  { icon: Apple, label: "Snack" },
-  { icon: MessageCircleMore, label: "Chat" },
-  { icon: Lightbulb, label: "Advice" },
-];
+// Constants
+const isLocal = process.env.DFX_NETWORK === "local";
+const host = isLocal ? "http://localhost:4943" : "https://icp-api.io";
+const identityProvider = isLocal
+  ? "http://rdmx6-jaaaa-aaaaa-aaadq-cai.localhost:4943"
+  : "https://identity.ic0.app";
+const mainCanisterId = process.env.CANISTER_ID;
 
 // Main application
 const App = () => {
-  const [currentRoom, setCurrentRoom] = useState<RoomType["label"]>("Home");
+  const [authClient, setAuthClient] = useState<AuthClient | null>(null);
+  const [httpAgent, setHttpAgent] = useState<HttpAgent | null>(null);
+  const [mainActor, setMainActor] = useState<AS<MainService> | null>(null);
+  const [userActor, setUserActor] = useState<AS<UserService> | null>(null);
+  const [userInfo, setUserInfo] = useState<string | null>(null);
 
-  // Send chat message
-  const sendChatMessage = (message: string) => {
-    console.log({ message });
+  // Initialize app
+  useEffect(() => {
+    async function initApp() {
+      // Create auth client
+      const newAuthClient = await AuthClient.create();
+      setAuthClient(newAuthClient);
+      console.log("Auth client created");
+
+      // Create http agent
+      const identity = newAuthClient.getIdentity();
+      const newHttpAgent = await HttpAgent.create({ host, identity });
+      if (isLocal) await newHttpAgent.fetchRootKey();
+      setHttpAgent(newHttpAgent);
+      console.log("Http agent created");
+
+      // Create main actor
+      const newMainActor: AS<MainService> = await Actor.createActor(mainIDL, {
+        agent: newHttpAgent,
+        canisterId: mainCanisterId!,
+      });
+      setMainActor(newMainActor);
+      console.log("Main actor created");
+    }
+    initApp();
+  }, []);
+
+  // Initialize auth
+  useEffect(() => {
+    async function handleAuthState() {
+      if (await authClient?.isAuthenticated()) {
+        console.log("Authenticated");
+
+        // Get user canister
+        const userId = authClient?.getIdentity().getPrincipal();
+        const fetchedUserCanisterIdArray: [Principal] =
+          await mainActor?.getUserCanister(userId);
+        const fetchedUserCanisterId = fetchedUserCanisterIdArray[0];
+
+        // Create user actor
+        if (fetchedUserCanisterId instanceof Principal) {
+          const newUserActor: AS<UserService> = Actor.createActor(userIDL, {
+            agent: httpAgent!,
+            canisterId: fetchedUserCanisterId,
+          });
+          setUserActor(newUserActor);
+        }
+        // If not - create a new canister, save it to accounts and create an actor
+      } else {
+        console.log("Not authenticated");
+      }
+    }
+    handleAuthState();
+  }, [mainActor]);
+
+  // Login
+  const login = async () => {
+    await authClient?.login({
+      identityProvider,
+      onSuccess: () => {},
+    });
+  };
+
+  // Log out
+  const logout = async () => {
+    await authClient?.logout();
+    setUserActor(null);
   };
 
   return (
-    <div className="p-16 min-h-dvh flex font-clash">
-      {/* Main container */}
-      <GameContainer>
-        {/* Main */}
-        <div className="flex-1 flex flex-col">
-          <CharacterStats character={characterInfo} />
-
-          <div className="flex flex-1 items-center">
-            <RoomActions actions={roomActions} />
-            <Character />
-          </div>
-
-          <RoomNav
-            rooms={rooms}
-            currentRoom={currentRoom}
-            setRoom={setCurrentRoom}
-          />
-        </div>
-
-        {/* Sidebar */}
-        <div className="w-96 flex flex-col gap-4">
-          <UserInfo userInfo={userInfo} />
-          <Chat messages={chatMessages} sendMessage={sendChatMessage} />
-        </div>
-      </GameContainer>
+    <div className="p-10 h-dvh flex font-clash bg-radial/oklch from-indigo-900 to-indigo-950">
+      {authClient?.getIdentity() instanceof AnonymousIdentity ? (
+        <Login login={login} />
+      ) : (
+        <Game
+          authClient={authClient}
+          httpAgent={httpAgent}
+          mainActor={mainActor}
+          userActor={userActor}
+          logout={logout}
+        />
+      )}
     </div>
   );
 };

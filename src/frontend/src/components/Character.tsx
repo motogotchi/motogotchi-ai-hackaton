@@ -1,7 +1,8 @@
 import * as motion from "motion/react-client";
+import { CharacterType } from "src/types";
 
 // Character
-const Character = () => {
+const Character = ({ character }: { character: CharacterType }) => {
   return (
     <motion.div
       className="m-auto p-10 group cursor-pointer"
@@ -23,8 +24,8 @@ const Character = () => {
     >
       <img
         className="h-96 drop-shadow-2xl transition drop-shadow-indigo-600/30 group-hover:drop-shadow-indigo-600/50"
-        src="/public/motogotchi.webp"
-        alt="/"
+        src={character.image}
+        alt={character.name}
       />
     </motion.div>
   );

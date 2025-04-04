@@ -1,14 +1,22 @@
 import { LucideIcon } from "lucide-react";
+import { ActorSubclass as AS, HttpAgent } from "@dfinity/agent";
+import { AuthClient } from "@dfinity/auth-client";
+
+import { _SERVICE as MainService } from "declarations/main/main.did.d";
+import { _SERVICE as UserService } from "declarations/user/user.did.d";
+
+// Character
+export type CharacterType = {
+  name: string;
+  image: string;
+};
 
 // User info
 export type UserInfoType = {
-  letters: string;
   name: string;
-  age: string;
   height: string;
   weight: string;
   goals: string;
-  id: string;
 };
 
 // Character info
@@ -34,4 +42,12 @@ export type RoomActionType = {
 export type ChatMessageType = {
   role: string;
   content: string;
+};
+
+export type GameProps = {
+  authClient: AuthClient;
+  httpAgent: HttpAgent;
+  mainActor: AS<MainService>;
+  userActor: AS<UserService>;
+  logout: () => {};
 };
