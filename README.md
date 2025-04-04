@@ -18,13 +18,19 @@ Motogotchi AI bot deployed on Internet Computer Protocol (ICP).
    pnpm run dev
    ```
 
-2. **Deploy Locally**
+2. **Build Locally**
+
+   ```
+   pnpm run build
+   ```
+
+3. **Deploy Locally**
 
    ```
    pnpm run deploy
    ```
 
-3. **Deploy to Mainnet**
+4. **Deploy to Mainnet**
    - Obtain [cycles](https://internetcomputer.org/docs/building-apps/getting-started/tokens-and-cycles) by converting ICP tokens
    - Deploy: `dfx deploy --network ic`
    - Set up [cycle management](https://cycleops.dev/) to prevent your project from being removed when cycles run out
