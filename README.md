@@ -12,24 +12,17 @@ Motogotchi AI bot deployed on Internet Computer Protocol (ICP).
 
 ### Development Steps
 
-1. **Create Identity**
+1. **Develop Locally**
 
    ```
-   dfx start --background
-   dfx identity new YOUR_IDENTITY_NAME
-   dfx identity use YOUR_IDENTITY_NAME
+   pnpm run dev
    ```
-
-   _Important: Save your seed phrase securely_
 
 2. **Deploy Locally**
 
    ```
-   npm install
-   dfx deploy
+   pnpm run deploy
    ```
-
-   Your project will run locally with URLs shown in terminal.
 
 3. **Deploy to Mainnet**
    - Obtain [cycles](https://internetcomputer.org/docs/building-apps/getting-started/tokens-and-cycles) by converting ICP tokens
