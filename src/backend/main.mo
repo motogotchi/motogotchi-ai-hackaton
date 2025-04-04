@@ -6,6 +6,10 @@ import User "user";
 // Main Canister
 persistent actor Main {
 
+  ///////////////
+  // Variables //
+  ///////////////
+
   // Users & their canisters
   private stable var stableSavedAccounts : [(Principal, Principal)] = [];
   private var savedAccounts = Map.fromIter<Principal, Principal>(stableSavedAccounts.vals(), Map.phash);
