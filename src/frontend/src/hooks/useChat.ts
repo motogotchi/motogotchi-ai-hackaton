@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useActors } from "./useActors";
-import { ChatMessageType } from "../types"; // Your existing type
-import { ChatMessage as BackendChatMessageType } from "declarations/user/user.did"; // Import backend type
 
-// Helper to convert backend role enum to frontend string
+import { ChatMessageType } from "../types";
+import { ChatMessage as BackendChatMessageType } from "declarations/user/user.did";
+
+// Convert role enum to string
 const convertRole = (role: any): "user" | "assistant" | "system" => {
   if (role && typeof role === "object") {
     if ("user" in role) return "user";
@@ -11,7 +12,7 @@ const convertRole = (role: any): "user" | "assistant" | "system" => {
     if ("system" in role) return "system";
   }
   console.warn("Unknown role format:", role);
-  return "assistant"; // Default to assistant
+  return "assistant";
 };
 
 // Use chat
@@ -21,6 +22,7 @@ export const useChat = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch chat history
   const fetchChatHistory = useCallback(async () => {
     if (!userActor) {
       if (!actorsLoading) setIsLoading(false);
@@ -42,7 +44,7 @@ export const useChat = () => {
     } catch (err) {
       console.error("Failed to fetch chat history:", err);
       setError("Could not load chat history.");
-      setMessages([]); // Clear messages on error
+      setMessages([]);
     } finally {
       setIsLoading(false);
     }
@@ -61,13 +63,14 @@ export const useChat = () => {
     }
   }, [userActor, actorsLoading, fetchChatHistory]);
 
+  // Send message
   const sendMessage = useCallback(
     async (userMessage: string) => {
       if (!userActor) {
         setError("Cannot send message: User backend not available.");
         return;
       }
-      if (!userMessage.trim()) return; // Don't send empty messages
+      if (!userMessage.trim()) return;
 
       console.log("Sending message:", userMessage);
       const newUserMessage: ChatMessageType = {
@@ -76,7 +79,7 @@ export const useChat = () => {
       };
       // Optimistic update
       setMessages((prev) => [...prev, newUserMessage]);
-      setIsLoading(true); // Indicate loading for response
+      setIsLoading(true);
       setError(null);
 
       try {
@@ -85,23 +88,21 @@ export const useChat = () => {
           role: "assistant",
           content: response,
         };
-        // Replace optimistic + add response properly (or fetch history again if needed)
-        // This simple add might lead to duplicates if backend already added user message
-        // A safer approach might be to refetch history, but this is faster UI
+        // Replace optimistic + add response properly
         setMessages((prev) => [...prev, assistantMessage]);
         console.log("Received response:", response);
       } catch (err) {
         console.error("Failed to send message or get response:", err);
         setError("Failed to get a response from the assistant.");
-        // Optional: Remove optimistic user message on error
-        // setMessages(prev => prev.filter(msg => msg !== newUserMessage));
+        setMessages((prev) => prev.filter((msg) => msg !== newUserMessage));
       } finally {
         setIsLoading(false);
       }
     },
     [userActor]
-  ); // Removed setMessages from dependencies - managed internally
+  );
 
+  // Fetch advice
   const fetchAdvice = useCallback(async () => {
     if (!userActor) {
       setError("Cannot get advice: User backend not available.");
@@ -124,35 +125,34 @@ export const useChat = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [userActor]); // Removed setMessages from dependencies
+  }, [userActor]);
 
+  // Clear chat history
   const clearChatHistory = useCallback(async () => {
     if (!userActor) {
       setError("Cannot clear history: User backend not available.");
       return;
     }
     console.log("Clearing chat history...");
-    // Optional: Optimistic UI update
-    // setMessages([]);
+    setMessages([]);
     setIsLoading(true);
     setError(null);
     try {
       await userActor.clearChatHistory();
-      setMessages([]); // Clear local state on success
+      setMessages([]);
       console.log("Chat history cleared.");
     } catch (err) {
       console.error("Failed to clear chat history:", err);
       setError("Could not clear chat history.");
-      // Optional: Refetch history on error to revert optimistic update
-      // fetchChatHistory();
+      fetchChatHistory();
     } finally {
       setIsLoading(false);
     }
-  }, [userActor]); // Removed setMessages from dependencies
+  }, [userActor]);
 
   return {
     messages,
-    isLoading: isLoading || actorsLoading, // Combine loading states
+    isLoading: isLoading || actorsLoading,
     error,
     sendMessage,
     fetchAdvice,

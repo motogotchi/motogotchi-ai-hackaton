@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { ActorSubclass, HttpAgent, Actor } from "@dfinity/agent";
 import { Principal } from "@dfinity/principal";
-import { useAuth } from "../hooks/useAuth"; // Use the hook
+import { useAuth } from "../hooks/useAuth";
 
 import { idlFactory as mainIDL } from "declarations/main";
 import { idlFactory as userIDL } from "declarations/user";
@@ -23,7 +23,7 @@ interface ActorContextType {
   httpAgent: HttpAgent | null;
   mainActor: ActorSubclass<MainService> | null;
   userActor: ActorSubclass<UserService> | null;
-  isLoading: boolean; // Loading state for actors
+  isLoading: boolean;
 }
 
 export const ActorContext = createContext<ActorContextType | undefined>(
@@ -35,7 +35,7 @@ interface ActorProviderProps {
 }
 
 export const ActorProvider: React.FC<ActorProviderProps> = ({ children }) => {
-  const { identity, isAuthenticated, isLoading: isAuthLoading } = useAuth(); // Get auth state
+  const { identity, isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const [httpAgent, setHttpAgent] = useState<HttpAgent | null>(null);
   const [mainActor, setMainActor] = useState<ActorSubclass<MainService> | null>(
     null
@@ -71,17 +71,15 @@ export const ActorProvider: React.FC<ActorProviderProps> = ({ children }) => {
         setHttpAgent(null);
         setIsLoading(false);
       } else if (!isAuthLoading && isAuthenticated && !agent) {
-        // Authenticated but agent not ready yet (should be quick)
         setIsLoading(true);
       } else {
-        // Still waiting for auth check
         setIsLoading(true);
       }
       return;
     }
 
-    setIsLoading(true); // Start actor loading process
-    setHttpAgent(agent); // Set the created agent
+    setIsLoading(true);
+    setHttpAgent(agent);
 
     console.log("Creating main actor for canister:", mainCanisterId);
     const newMainActor = Actor.createActor<MainService>(mainIDL, {
@@ -119,7 +117,6 @@ export const ActorProvider: React.FC<ActorProviderProps> = ({ children }) => {
           } catch (error) {
             console.error("Failed to create user account:", error);
             setIsLoading(false);
-            // Handle error appropriately (e.g., show message to user)
             return;
           }
         }
@@ -137,16 +134,15 @@ export const ActorProvider: React.FC<ActorProviderProps> = ({ children }) => {
           console.log("User actor created");
         } else {
           console.error("Failed to obtain user canister ID");
-          // Handle this case - user might need to retry?
         }
       })
       .catch((error: Error) => {
         console.error("Error fetching or creating user canister:", error);
       })
       .finally(() => {
-        setIsLoading(false); // Finished actor setup (or failed)
+        setIsLoading(false);
       });
-  }, [agent, isAuthenticated, isAuthLoading, identity]); // Depend on agent, auth status, and identity
+  }, [agent, isAuthenticated, isAuthLoading, identity]);
 
   const value = {
     httpAgent,

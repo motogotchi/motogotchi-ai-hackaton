@@ -9,7 +9,6 @@ import { AuthClient } from "@dfinity/auth-client";
 import { Identity } from "@dfinity/agent";
 import { Principal } from "@dfinity/principal";
 
-// Constants (consider moving to a config file)
 const isLocal = process.env.DFX_NETWORK === "local";
 const identityProvider = isLocal
   ? "http://rdmx6-jaaaa-aaaaa-aaadq-cai.localhost:4943"
@@ -22,7 +21,7 @@ interface AuthContextType {
   principal: Principal | null;
   login: () => Promise<void>;
   logout: () => Promise<void>;
-  isLoading: boolean; // Added loading state
+  isLoading: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -38,7 +37,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [identity, setIdentity] = useState<Identity | null>(null);
   const [principal, setPrincipal] = useState<Principal | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true); // Start loading
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // Initialize AuthClient
   useEffect(() => {
@@ -51,7 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIdentity(id);
         setPrincipal(id.getPrincipal());
       }
-      setIsLoading(false); // Finished initial check
+      setIsLoading(false);
     });
   }, []);
 

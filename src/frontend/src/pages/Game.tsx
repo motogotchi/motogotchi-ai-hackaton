@@ -10,14 +10,14 @@ import {
   Trash2,
 } from "lucide-react";
 
-// Import Hooks
+// Hooks
 import { useAuth } from "../hooks/useAuth";
 import { useUserInfo } from "../hooks/useUserInfo";
 import { useChat } from "../hooks/useChat";
 import { useActors } from "../hooks/useActors";
 
-// Import Types and Components
-import { RoomActionType, RoomType, GameProps } from "../types";
+// Types and Components
+import { RoomActionType, RoomType } from "../types";
 import GameContainer from "../components/GameContainer";
 import CharacterStats from "../components/CharacterStats";
 import RoomActions from "../components/RoomActions";
@@ -37,7 +37,6 @@ const rooms: RoomType[] = [
   { icon: Bath, label: "Bathroom" },
 ];
 
-// Add 'Clear' and 'Refresh Info' to actions
 const roomActions: RoomActionType[] = [
   { icon: MessageCircleMore, label: "Chat" },
   { icon: Lightbulb, label: "Advice" },
@@ -45,7 +44,7 @@ const roomActions: RoomActionType[] = [
   { icon: Trash2, label: "Clear Chat" },
 ];
 
-// Define Props for Game component
+// Game component props
 interface GamePageProps {
   logout: () => Promise<void>;
 }
@@ -111,9 +110,6 @@ const Game: React.FC<GamePageProps> = ({ logout }) => {
     );
   }
 
-  // Combine specific loading states for finer control if needed
-  const isAnythingLoading = isLoadingUserInfo || isLoadingChat;
-
   // --- Render ---
   const userId = principal ? principal.toText() : "Unknown Principal";
 
@@ -166,11 +162,6 @@ const Game: React.FC<GamePageProps> = ({ logout }) => {
           sendMessage={sendMessage}
           isLoading={isLoadingChat}
         />
-        {isAnythingLoading && (
-          <div className="text-center text-sm text-gray-400 p-2">
-            Processing...
-          </div>
-        )}
       </div>
     </GameContainer>
   );
