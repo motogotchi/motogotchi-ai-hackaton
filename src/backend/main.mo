@@ -53,7 +53,7 @@ persistent actor Main {
       };
 
       case (_) {
-        let newCanister = await (with cycles = 100_000_000_000) User.User(userPrincipal, Principal.fromActor(Main));
+        let newCanister = await (with cycles = 1_000_000_000_000) User.User(userPrincipal, Principal.fromActor(Main));
         let newCanisterPrincipal = Principal.fromActor(newCanister);
         Map.set(savedAccounts, Map.phash, userPrincipal, newCanisterPrincipal);
         return newCanisterPrincipal;
