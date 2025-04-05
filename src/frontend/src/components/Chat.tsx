@@ -6,11 +6,17 @@ import { useAuth } from "../hooks/useAuth";
 interface ChatProps {
   messages: ChatMessageType[];
   sendMessage: (message: string) => void;
+  setUserInfoWithLLM: (message: string) => void;
   isLoading: boolean;
 }
 
 // Chat component
-const Chat = ({ messages, sendMessage, isLoading }: ChatProps) => {
+const Chat = ({
+  messages,
+  sendMessage,
+  setUserInfoWithLLM,
+  isLoading,
+}: ChatProps) => {
   const [currentMessage, setCurrentMessage] = useState("");
   const { principal } = useAuth(); // Get principal for user avatar initials
   const chatEndRef = useRef<HTMLDivElement>(null); // Ref for scrolling
@@ -21,7 +27,15 @@ const Chat = ({ messages, sendMessage, isLoading }: ChatProps) => {
   // Handle sending messages
   const handleSendMessage = () => {
     if (!currentMessage.trim() || isLoading) return; // Prevent sending empty or while loading
-    sendMessage(currentMessage);
+
+    const userInfoMessage = currentMessage.startsWith("/info")
+      ? currentMessage.substring(4)
+      : null;
+
+    userInfoMessage
+      ? setUserInfoWithLLM(userInfoMessage)
+      : sendMessage(currentMessage);
+
     setCurrentMessage("");
   };
 

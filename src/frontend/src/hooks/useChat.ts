@@ -150,6 +150,42 @@ export const useChat = () => {
     }
   }, [userActor]);
 
+  // Set user info with LLM
+  const setUserInfoWithLLM = useCallback(
+    async (message: string) => {
+      if (!userActor) {
+        setError("Cannot set user info: User backend not available.");
+        return;
+      }
+      if (!message.trim()) return;
+
+      console.log("Setting user info with LLM...");
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        await userActor.setUserInfoWithLLM(message);
+        console.log("User info set successfully");
+        const successMessage: ChatMessageType = {
+          role: "assistant",
+          content: "I updated your information!",
+        };
+        setMessages((prev) => [...prev, successMessage]);
+      } catch (err) {
+        console.error("Failed to set user info:", err);
+        const errorMessage: ChatMessageType = {
+          role: "assistant",
+          content: "Oh no, something went wrong..",
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+        setError("Could not set user info.");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [userActor]
+  );
+
   return {
     messages,
     isLoading: isLoading || actorsLoading,
@@ -157,5 +193,6 @@ export const useChat = () => {
     sendMessage,
     fetchAdvice,
     clearChatHistory,
+    setUserInfoWithLLM,
   };
 };

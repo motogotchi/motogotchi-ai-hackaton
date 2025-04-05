@@ -62,6 +62,7 @@ const Game: React.FC<GamePageProps> = ({ logout }) => {
   const {
     messages,
     sendMessage,
+    setUserInfoWithLLM,
     fetchAdvice,
     clearChatHistory,
     isLoading: isLoadingChat,
@@ -160,6 +161,7 @@ const Game: React.FC<GamePageProps> = ({ logout }) => {
         <Chat
           messages={messages}
           sendMessage={sendMessage}
+          setUserInfoWithLLM={setUserInfoWithLLM}
           isLoading={isLoadingChat}
         />
       </div>
