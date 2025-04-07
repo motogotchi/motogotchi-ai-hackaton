@@ -118,12 +118,13 @@ const Game: React.FC<GamePageProps> = ({ logout }) => {
     <GameContainer>
       {/* Display Errors */}
       {userInfoError && (
-        <div className="absolute top-2 left-2 bg-red-600 p-2 rounded text-white z-10">
+        <div className="absolute top-2 left-2 bg-red-600 mp-2 text-sm px-2 py-1 rounded text-white z-10">
           User Info Error: {userInfoError}
         </div>
       )}
+
       {chatError && (
-        <div className="absolute top-12 left-2 bg-red-600 p-2 rounded text-white z-10">
+        <div className="absolute top-12 left-2 bg-red-600 mp-2 text-sm px-2 py-1 rounded text-white z-10">
           Chat Error: {chatError}
         </div>
       )}

@@ -2,10 +2,10 @@ import { UserInfoType } from "../types";
 
 // User info props
 interface UserInfoProps {
-  userInfo: UserInfoType | null; // Can be null initially or on error
+  userInfo: UserInfoType | null;
   userId: string;
-  logout: () => void; // Changed from {} to void for clarity
-  isLoading: boolean; // Receive loading state
+  logout: () => void;
+  isLoading: boolean;
 }
 
 // User info component
@@ -20,8 +20,7 @@ const UserInfo = ({ userInfo, userId, logout, isLoading }: UserInfoProps) => {
   return (
     <div className="shadow-lg border-t-2 border-gray-400/80 -mt-8 -mr-8 flex flex-col gap-3 bg-gray-900/60 backdrop-blur-lg rounded-2xl inset-ring-4 inset-ring-white/30 p-6 relative">
       {" "}
-      {/* Added relative for potential spinner */}
-      {/* Optional: Loading overlay */}
+      {/* Loading overlay */}
       {isLoading && (
         <div className="absolute inset-0 bg-gray-900/50 flex items-center justify-center rounded-2xl z-10">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
@@ -31,7 +30,7 @@ const UserInfo = ({ userInfo, userId, logout, isLoading }: UserInfoProps) => {
       <div className="flex gap-4 items-center w-full">
         {/* Avatar */}
         <div className="flex rounded-lg bg-linear-240 from-gray-500 to-gray-600 inset-ring-4 inset-ring-white/20 w-10 h-10">
-          {/* Placeholder initials - could make dynamic */}
+          {/* Placeholder initials */}
           <div className="m-auto font-semibold">
             {displayInfo.name &&
             displayInfo.name !== "Loading..." &&

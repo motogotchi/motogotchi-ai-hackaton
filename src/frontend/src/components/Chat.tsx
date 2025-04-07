@@ -29,8 +29,10 @@ const Chat = ({
     if (!currentMessage.trim() || isLoading) return; // Prevent sending empty or while loading
 
     const userInfoMessage = currentMessage.startsWith("/info")
-      ? currentMessage.substring(4)
+      ? currentMessage.substring(5)
       : null;
+
+    console.log({ userInfoMessage });
 
     userInfoMessage
       ? setUserInfoWithLLM(userInfoMessage)
@@ -64,7 +66,6 @@ const Chat = ({
 
       {/* Chat area */}
       <div className="flex flex-col flex-1 px-6 py-4 overflow-y-auto space-y-4">
-        {" "}
         {messages.map((message, index) => {
           // Don't render system messages by default
           if (message.role === "system") return null;
@@ -123,11 +124,17 @@ const Chat = ({
               </div>
             </div>
           )}
+
+        {messages.length === 0 ? (
+          <div className="m-auto text-center opacity-60">
+            <div>It's quiet here.</div>
+            <div>Try saying hello to the Motogotchi.</div>
+          </div>
+        ) : null}
       </div>
 
       {/* Chat form */}
       <div className="p-2 flex items-center gap-2 m-2 border-t border-white/10 pt-3">
-        {" "}
         {/* Input */}
         <input
           className="w-full bg-gray-300 text-black placeholder:text-gray-500 rounded-lg px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-teal-500 inset-ring-4 inset-ring-white" // Improved focus style

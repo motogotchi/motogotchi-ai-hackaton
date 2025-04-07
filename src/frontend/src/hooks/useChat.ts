@@ -163,6 +163,18 @@ export const useChat = () => {
       setIsLoading(true);
       setError(null);
 
+      const setInfoMessages: ChatMessageType[] = [
+        {
+          role: "user",
+          content: message,
+        },
+        {
+          role: "assistant",
+          content: "Updating your information, one moment..",
+        },
+      ];
+      setMessages((prev) => [...prev, ...setInfoMessages]);
+
       try {
         await userActor.setUserInfoWithLLM(message);
         console.log("User info set successfully");
